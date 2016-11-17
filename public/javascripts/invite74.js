@@ -183,11 +183,12 @@
       });
       geometry = new THREE.TextGeometry(word, { font: font, curveSegments: 12 });
       mesh = new THREE.Mesh(geometry, material);
-      var x = Math.floor(Math.random() * 900) + 100;
+      var x = Math.floor(Math.random() * 400) + 100;
       x *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
-      var z = Math.floor(Math.random() * 900) + 100;
+      var z = Math.floor(Math.random() * 400) + 100;
       z *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
       mesh.position.set(x, 0, z);
+      mesh.lookAt(new THREE.Vector3(0, 0, 0));
       scene.add(mesh);
       words.push(mesh);
 
