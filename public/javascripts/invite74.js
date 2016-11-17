@@ -8,6 +8,8 @@
 
   var i, l;
 
+  var words = [];
+
   // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 
   var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
@@ -149,7 +151,7 @@
 
     // floor
 
-    geometry = new THREE.PlaneGeometry(2000, 2000, 100, 100);
+    geometry = new THREE.PlaneGeometry(4000, 4000, 100, 100);
     geometry.rotateX(-Math.PI / 2);
 
     for (i = 0, l = geometry.vertices.length; i < l; i++) {
@@ -172,6 +174,25 @@
 
     mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
+
+    // words
+
+    ["TI", "TEBI", "DRAGA", "OSOBA", "POZVANI", "KOD", "ICE", "MARKA"].forEach(function (word) {
+      material = new THREE.MeshPhongMaterial({
+        color: 0xdddddd
+      });
+      geometry = new THREE.TextGeometry(word, { font: font, curveSegments: 12 });
+      mesh = new THREE.Mesh(geometry, material);
+      var x = Math.floor(Math.random() * 900) + 100;
+      x *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
+      var z = Math.floor(Math.random() * 900) + 100;
+      z *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
+      mesh.position.set(x, 0, z);
+      scene.add(mesh);
+      words.push(mesh);
+    });
+
+    console.log(words);
 
     // renderer
 
