@@ -21,19 +21,70 @@ body {
 #instructions {
   width: 100%;
   height: 100%;
-  display: -webkit-box;
-  display: -moz-box;
-  display: box;
-  -webkit-box-orient: horizontal;
-  -moz-box-orient: horizontal;
-  box-orient: horizontal;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  box-pack: center;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  box-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   color: #ffffff;
   text-align: center;
   cursor: pointer;
+}
+
+#instructions {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+  text-align: center;
+  cursor: pointer;
+}
+
+#text {
+  width: 100%;
+  text-align: center;
+  font-size: 300%;
+  color: white;
+  position: absolute;
+  bottom: 12%;
+}
+
+#text ul {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#text ul li {
+  margin: 0 6px;
+  display: inline-block;
+  border-bottom: 2px solid #ffffff;
+}
+
+#text ul li span {
+  opacity: 0;
+  -webkit-transition: opacity 2s ease-in-out;
+  -moz-transition: opacity 2s ease-in-out;
+  transition: opacity 2s ease-in-out;
+}
+
+#text ul li span.visible {
+  opacity: 1;
+}
+
+#text ul li:nth-child(2) span,
+#text ul li:nth-child(10) span {
+  opacity: 1;
+}
+
+#invitation {
+  display: none;
+  color: #ffffff;
+  font-size: 30px;
+  margin: 1em 0;
+}
+
+#concealed {
+  margin-top: 1em;
 }

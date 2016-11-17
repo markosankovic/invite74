@@ -9,17 +9,63 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
   <script src="javascripts/three.js"></script>
   <script src="javascripts/controls/PointerLockControls.js"></script>
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 </head>
 
 <body>
+
   <div id="blocker">
     <div id="instructions">
-      <span style="font-size:40px">Reči u magli</span>
-      <br /> (W, A, S, D = Pomeraj, SPACE = Skoči, MOUSE = Gledaj okolo)
-      <br />Ica &amp; Marko
+      <div><span style="font-size:40px; font-weight: 100;">Reči u magli</span></div>
+      <div id="invitation">Ica i Marko te pozivaju da sa svojom dragom osobom dođeš kod nas na žurku 26. novembra<br/> na adresi Omladinskih brigada 74/10. <br/>Hvala što si igrao igru, volimo te i vidimo se!!!<br/>Ica &amp; Marko</div>
+      <div>(W, A, S, D = Pomeraj, SPACE = Skoči, MOUSE = Gledaj okolo)</div>
+      <div>Ica &amp; Marko</div>
     </div>
   </div>
+
+  <div id="text">
+    <ul>
+      <li><span>TI</span></li>
+      <li><span class="visible">I</span></li>
+      <li><span>TEBI</span></li>
+      <li><span>DRAGA</span></li>
+      <li><span>OSOBA</span></li>
+      <li><span>STE</span></li>
+      <li><span>POZVANI</span></li>
+      <li><span>KOD</span></li>
+      <li><span>ICE</span></li>
+      <li><span class="visible">I</span></li>
+      <li><span>MARKA</span></li>
+      <li><span>NA</span></li>
+      <li><span>USELJAJ</span></li>
+    </ul>
+    <div id="concealed">11</div>
+  </div>
   <script src="javascripts/invite74.js"></script>
+  <script>
+    var wordsConcealed = 11;
+
+    function revealWord(word) {
+      $('#text ul li span').each(function(index, span) {
+        if (span.innerHTML === word) {
+          $(span).addClass("visible");
+          wordsConcealed--;
+          $("#concealed").html(wordsConcealed);
+          if (wordsConcealed === 0) {
+            showInvitation();
+          }
+        }
+      });
+    }
+
+    function showInvitation() {
+      $("#instructions").unbind("click");
+      $("#instructions").show();
+      $("#blocker").fadeIn(400, function() {
+        $("#invitation").fadeIn(2000);
+      })
+    }
+  </script>
 </body>
 
 </html>

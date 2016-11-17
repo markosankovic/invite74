@@ -8,6 +8,9 @@
 
   var i, l;
 
+  var foundWordObjects = [];
+  var animatedWordObjects = [];
+
   // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 
   var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
@@ -18,12 +21,10 @@
       if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
         controlsEnabled = true;
         controls.enabled = true;
-        blocker.style.display = 'none';
+        $(blocker).fadeOut(400);
       } else {
         controls.enabled = false;
-        blocker.style.display = '-webkit-box';
-        blocker.style.display = '-moz-box';
-        blocker.style.display = 'box';
+        $(blocker).fadeIn(400);
         instructions.style.display = '';
       }
     };
@@ -187,7 +188,7 @@
 
     // words
 
-    ["TI", "TEBI", "DRAGA", "OSOBA", "POZVANI", "KOD", "ICE", "MARKA"].forEach(function (word) {
+    ["TI", "TEBI", "DRAGA", "OSOBA", "STE", "POZVANI", "KOD", "ICE", "MARKA", "NA", "USELJAJ"].forEach(function (word) {
       material = new THREE.MeshPhongMaterial({
         color: 0xdddddd
       });
@@ -266,7 +267,23 @@
       // calculate objects intersecting the picking ray
       var intersects = raycaster.intersectObjects(scene.children);
 
+      intersects.forEach(function (intersect) {
+        if (foundWordObjects.indexOf(intersect.object) === -1 && intersect.object.userData.word) {
+          foundWordObjects.push(intersect.object);
+          animatedWordObjects.push(intersect.object);
+          window.revealWord(intersect.object.userData.word);
+        }
+      });
+
+      animateWordObjects();
+
       prevTime = time;
+    }
+
+    function animateWordObjects() {
+      animatedWordObjects.forEach(function (object) {
+        object.translateY(0.5);
+      });
     }
 
     renderer.render(scene, camera);
