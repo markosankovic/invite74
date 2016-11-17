@@ -8,8 +8,6 @@
 
   var i, l;
 
-  var words = [];
-
   // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 
   var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
@@ -75,6 +73,18 @@
     init(font);
     animate();
   });
+
+  var raycaster = new THREE.Raycaster();
+  var mouse = new THREE.Vector2();
+
+  function onMouseMove(event) {
+
+    // calculate mouse position in normalized device coordinates
+    // (-1 to +1) for both components
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  }
 
   var controlsEnabled = false;
 
@@ -183,6 +193,7 @@
       });
       geometry = new THREE.TextGeometry(word, { font: font, curveSegments: 12 });
       mesh = new THREE.Mesh(geometry, material);
+      mesh.userData = { word: word };
       var x = Math.floor(Math.random() * 400) + 100;
       x *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
       var z = Math.floor(Math.random() * 400) + 100;
@@ -190,7 +201,6 @@
       mesh.position.set(x, 0, z);
       mesh.lookAt(new THREE.Vector3(0, 0, 0));
       scene.add(mesh);
-      words.push(mesh);
 
       geometry = new THREE.Geometry();
       geometry.vertices.push(new THREE.Vector3(0, 3, 0));
@@ -247,6 +257,14 @@
         controls.getObject().position.y = 10;
         canJump = true;
       }
+
+      // update the picking ray with the camera and mouse position
+      raycaster.setFromCamera(mouse, camera);
+      raycaster.near = 0;
+      raycaster.far = 100;
+
+      // calculate objects intersecting the picking ray
+      var intersects = raycaster.intersectObjects(scene.children);
 
       prevTime = time;
     }
