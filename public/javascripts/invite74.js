@@ -190,9 +190,14 @@
       mesh.position.set(x, 0, z);
       scene.add(mesh);
       words.push(mesh);
-    });
 
-    console.log(words);
+      geometry = new THREE.Geometry();
+      geometry.vertices.push(new THREE.Vector3(0, 3, 0));
+      geometry.vertices.push(new THREE.Vector3(x, 3, z));
+      material = new THREE.LineBasicMaterial({ color: 0x777777 });
+      var line = new THREE.Line(geometry, material);
+      scene.add(line);
+    });
 
     // renderer
 
