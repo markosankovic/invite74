@@ -1,5 +1,5 @@
 (function () {
-  var camera, scene, renderer;
+  var camera, scene, renderer, composer;
   var geometry, material, mesh;
   var controls;
 
@@ -219,6 +219,25 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    // postprocessing
+
+    composer = new THREE.EffectComposer(renderer);
+    composer.addPass(new THREE.RenderPass(scene, camera));
+
+    var shaderVignette = THREE.VignetteShader;
+    var effectVignette = new THREE.ShaderPass(shaderVignette);
+    composer.addPass(effectVignette);
+
+    var shaderSepia = THREE.SepiaShader;
+    var effectSepia = new THREE.ShaderPass(shaderSepia);
+    effectSepia.uniforms.amount.value = 0.6;
+    composer.addPass(effectSepia);
+
+    // EffectCopy, which output the result as is:
+    var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
+    effectCopy.renderToScreen = true;
+    composer.addPass(effectCopy);
+
     // resize
 
     window.addEventListener('resize', onWindowResize, false);
@@ -228,7 +247,7 @@
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-
+    composer.setSize(window.innerWidth, window.innerHeight);
   }
 
   function animate() {
@@ -286,6 +305,7 @@
       });
     }
 
-    renderer.render(scene, camera);
+    // renderer.render(scene, camera);
+    composer.render();
   }
 })();
