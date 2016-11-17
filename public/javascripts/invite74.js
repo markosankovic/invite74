@@ -3,10 +3,10 @@
   var geometry, material, mesh;
   var controls;
 
-  var raycaster;
-
   var blocker = document.getElementById('blocker');
   var instructions = document.getElementById('instructions');
+
+  var i, l;
 
   // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 
@@ -14,7 +14,7 @@
 
   if (havePointerLock) {
     var element = document.body;
-    var pointerlockchange = function (event) {
+    var pointerlockchange = function () {
       if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
         controlsEnabled = true;
         controls.enabled = true;
@@ -28,7 +28,7 @@
       }
     };
 
-    var pointerlockerror = function (event) {
+    var pointerlockerror = function () {
       instructions.style.display = '';
     };
 
@@ -41,12 +41,12 @@
     document.addEventListener('mozpointerlockerror', pointerlockerror, false);
     document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
 
-    instructions.addEventListener('click', function (event) {
+    instructions.addEventListener('click', function () {
       instructions.style.display = 'none';
       // Ask the browser to lock the pointer
       element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
       if (/Firefox/i.test(navigator.userAgent)) {
-        var fullscreenchange = function (event) {
+        var fullscreenchange = function () {
           if (document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element) {
             document.removeEventListener('fullscreenchange', fullscreenchange);
             document.removeEventListener('mozfullscreenchange', fullscreenchange);
@@ -86,7 +86,6 @@
   var velocity = new THREE.Vector3();
 
   function init(font) {
-    console.log(font);
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
 
     scene = new THREE.Scene();
@@ -148,21 +147,19 @@
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
 
-    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
-
     // floor
 
     geometry = new THREE.PlaneGeometry(2000, 2000, 100, 100);
     geometry.rotateX(-Math.PI / 2);
 
-    for (var i = 0, l = geometry.vertices.length; i < l; i++) {
+    for (i = 0, l = geometry.vertices.length; i < l; i++) {
       var vertex = geometry.vertices[i];
       vertex.x += Math.random() * 20 - 10;
       vertex.y += Math.random() * 2;
       vertex.z += Math.random() * 20 - 10;
     }
 
-    for (var i = 0, l = geometry.faces.length; i < l; i++) {
+    for (i = 0, l = geometry.faces.length; i < l; i++) {
       var face = geometry.faces[i];
       face.vertexColors[0] = new THREE.Color().setHSL(Math.random() * 0.1 + 0.5, 0.25, Math.random() * 0.25 + 0.75);
       face.vertexColors[1] = new THREE.Color().setHSL(Math.random() * 0.1 + 0.5, 0.25, Math.random() * 0.25 + 0.75);
@@ -200,9 +197,6 @@
     requestAnimationFrame(animate);
 
     if (controlsEnabled) {
-      raycaster.ray.origin.copy(controls.getObject().position);
-      raycaster.ray.origin.y -= 10;
-
       var time = performance.now();
       var delta = (time - prevTime) / 1000;
 
