@@ -102,11 +102,36 @@
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xefefef, 0, 250);
+    scene.fog = new THREE.Fog(0xffffff, 1, 250);
 
-    var light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.75);
-    light.position.set(0.5, 1, 0.75);
-    scene.add(light);
+    // lights
+
+    var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.2);
+    hemiLight.color.setHSL(0.6, 1, 0.6);
+    hemiLight.groundColor.setHSL(0.095, 1, 0.75);
+    hemiLight.position.set(0, 500, 0);
+    scene.add(hemiLight);
+
+    var dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.color.setHSL(0.1, 1, 0.95);
+    dirLight.position.set(-1, 1.75, 1);
+    dirLight.position.multiplyScalar(50);
+
+    scene.add(dirLight);
+
+    dirLight.castShadow = true;
+
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+
+    var d = 50;
+
+    dirLight.shadow.camera.left = -d;
+    dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d;
+    dirLight.shadow.camera.bottom = -d;
+    dirLight.shadow.camera.far = 3500;
+    dirLight.shadow.bias = -0.0001;
 
     controls = new THREE.PointerLockControls(camera);
     scene.add(controls.getObject());
@@ -162,7 +187,7 @@
 
     // floor
 
-    geometry = new THREE.PlaneGeometry(4000, 4000, 100, 100);
+    geometry = new THREE.PlaneGeometry(8000, 8000, 100, 100);
     geometry.rotateX(-Math.PI / 2);
 
     for (i = 0, l = geometry.vertices.length; i < l; i++) {
@@ -184,7 +209,10 @@
     });
 
     mesh = new THREE.Mesh(geometry, material);
+
     scene.add(mesh);
+
+    mesh.receiveShadow = true;
 
     // words
 
@@ -192,7 +220,7 @@
       material = new THREE.MeshPhongMaterial({
         color: 0xdddddd
       });
-      geometry = new THREE.TextGeometry(word, { font: font, curveSegments: 12 });
+      geometry = new THREE.TextGeometry(word, { font: font, curveSegments: 32 });
       mesh = new THREE.Mesh(geometry, material);
       mesh.userData = { word: word };
       var x = Math.floor(Math.random() * 400) + 100;
@@ -201,7 +229,10 @@
       z *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
       mesh.position.set(x, 0, z);
       mesh.lookAt(new THREE.Vector3(0, 0, 0));
+      mesh.castShadow = true;
       scene.add(mesh);
+
+      mesh.receiveShadow = true;
 
       geometry = new THREE.Geometry();
       geometry.vertices.push(new THREE.Vector3(0, 3, 0));
@@ -217,6 +248,8 @@
     renderer.setClearColor(0xefefef);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.renderReverseSided = false;
     document.body.appendChild(renderer.domElement);
 
     // postprocessing
@@ -230,7 +263,7 @@
 
     var shaderSepia = THREE.SepiaShader;
     var effectSepia = new THREE.ShaderPass(shaderSepia);
-    effectSepia.uniforms.amount.value = 0.6;
+    effectSepia.uniforms.amount.value = 0.5;
     composer.addPass(effectSepia);
 
     // EffectCopy, which output the result as is:
