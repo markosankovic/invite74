@@ -8,6 +8,7 @@
 
   var i, l;
 
+  var words = [];
   var foundWordObjects = [];
   var animatedWordObjects = [];
 
@@ -75,7 +76,8 @@
     animate();
   });
 
-  var raycaster = new THREE.Raycaster();
+  var raycaster;
+  var cameraRaycaster = new THREE.Raycaster();
   var mouse = new THREE.Vector2();
 
   function onMouseMove(event) {
@@ -185,6 +187,8 @@
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
 
+    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3( 0, -1, 0 ), 0, 10);
+
     // floor
 
     geometry = new THREE.PlaneGeometry(8000, 8000, 100, 100);
@@ -234,6 +238,8 @@
       scene.add(mesh);
 
       mesh.receiveShadow = true;
+
+      words.push(mesh);
 
       geometry = new THREE.Geometry();
       geometry.vertices.push(new THREE.Vector3(0, 3, 0));
@@ -288,13 +294,20 @@
     requestAnimationFrame(animate);
 
     if (controlsEnabled) {
+      raycaster.ray.origin.copy(controls.getObject().position);
+      raycaster.ray.origin.y -= 10;
+
+      var intersections = raycaster.intersectObjects(words);
+
+      var isOnObject = intersections.length > 0;
+
       var time = performance.now();
       var delta = (time - prevTime) / 1000;
 
       velocity.x -= velocity.x * 4.0 * delta;
       velocity.z -= velocity.z * 4.0 * delta;
 
-      velocity.y -= 4.8 * 100.0 * delta; // 100.0 = mass
+      velocity.y -= 4.2 * 120.0 * delta; // 100.0 = mass
 
       if (moveForward) velocity.z -= 200.0 * delta;
       if (moveBackward) velocity.z += 200.0 * delta;
@@ -302,8 +315,15 @@
       if (moveLeft) velocity.x -= 200.0 * delta;
       if (moveRight) velocity.x += 200.0 * delta;
 
+      if (isOnObject === true) {
+        velocity.y = Math.max(0, velocity.y);
+        controls.getObject().translateY(0.5);
+        canJump = true;
+      } else {
+        controls.getObject().translateY(velocity.y * delta);
+      }
+
       controls.getObject().translateX(velocity.x * delta);
-      controls.getObject().translateY(velocity.y * delta);
       controls.getObject().translateZ(velocity.z * delta);
 
       if (controls.getObject().position.y < 10) {
@@ -312,13 +332,15 @@
         canJump = true;
       }
 
+      // Animate words
+
       // update the picking ray with the camera and mouse position
-      raycaster.setFromCamera(mouse, camera);
-      raycaster.near = 0;
-      raycaster.far = 150;
+      cameraRaycaster.setFromCamera(mouse, camera);
+      cameraRaycaster.near = 0;
+      cameraRaycaster.far = 150;
 
       // calculate objects intersecting the picking ray
-      var intersects = raycaster.intersectObjects(scene.children);
+      var intersects = cameraRaycaster.intersectObjects(scene.children);
 
       intersects.forEach(function (intersect) {
         if (foundWordObjects.indexOf(intersect.object) === -1 && intersect.object.userData.word) {
@@ -328,15 +350,11 @@
         }
       });
 
-      animateWordObjects();
-
-      prevTime = time;
-    }
-
-    function animateWordObjects() {
       animatedWordObjects.forEach(function (object) {
         object.translateY(0.5);
       });
+
+      prevTime = time;
     }
 
     // renderer.render(scene, camera);
