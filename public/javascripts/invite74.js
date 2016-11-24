@@ -223,9 +223,10 @@
       geometry = new THREE.TextGeometry(word, { font: font, curveSegments: 32 });
       mesh = new THREE.Mesh(geometry, material);
       mesh.userData = { word: word };
-      var x = Math.floor(Math.random() * 400) + 100;
+      mesh.scale.set(0.6, 0.6, 0.6);
+      var x = Math.floor(Math.random() * 200) + 100;
       x *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
-      var z = Math.floor(Math.random() * 400) + 100;
+      var z = Math.floor(Math.random() * 200) + 100;
       z *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
       mesh.position.set(x, 0, z);
       mesh.lookAt(new THREE.Vector3(0, 0, 0));
@@ -290,16 +291,16 @@
       var time = performance.now();
       var delta = (time - prevTime) / 1000;
 
-      velocity.x -= velocity.x * 10.0 * delta;
-      velocity.z -= velocity.z * 10.0 * delta;
+      velocity.x -= velocity.x * 4.0 * delta;
+      velocity.z -= velocity.z * 4.0 * delta;
 
-      velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+      velocity.y -= 4.8 * 100.0 * delta; // 100.0 = mass
 
-      if (moveForward) velocity.z -= 400.0 * delta;
-      if (moveBackward) velocity.z += 400.0 * delta;
+      if (moveForward) velocity.z -= 200.0 * delta;
+      if (moveBackward) velocity.z += 200.0 * delta;
 
-      if (moveLeft) velocity.x -= 400.0 * delta;
-      if (moveRight) velocity.x += 400.0 * delta;
+      if (moveLeft) velocity.x -= 200.0 * delta;
+      if (moveRight) velocity.x += 200.0 * delta;
 
       controls.getObject().translateX(velocity.x * delta);
       controls.getObject().translateY(velocity.y * delta);
@@ -314,7 +315,7 @@
       // update the picking ray with the camera and mouse position
       raycaster.setFromCamera(mouse, camera);
       raycaster.near = 0;
-      raycaster.far = 100;
+      raycaster.far = 150;
 
       // calculate objects intersecting the picking ray
       var intersects = raycaster.intersectObjects(scene.children);
